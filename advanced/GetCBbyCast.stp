@@ -1,0 +1,59 @@
+#magicwnd 2017
+#This scripts is to help find a callback function
+#Some advanced techniques were use the stap scripts.
+#1. define a function in the stap scripts.
+#2. change the probe function return value
+#3. access the proble function parameters via the register
+#4. find the real callback function.
+#5. check the audio_calbiration.c for details
+#6. when get the address, you can simply lookup the symbol table
+
+global client
+global pCalls
+global pSetcal
+global pnext
+global pprev
+
+%{#include <linux/list.h>%}
+
+function def_array:long(addr:long,index:long)
+%{
+	long p;
+	struct list_head* plist;
+
+	p = STAP_ARG_addr;
+	//STAP_RETVALUE=((long *)p)[STAP_ARG_index];
+	plist=(struct list_head*)p;
+
+  plist++;
+	STAP_RETVALUE=(long)plist;
+%}
+
+
+probe kernel.function("call_set_cals"){
+	client = $audio_cal->client_info; 
+ 
+  pnext = @cast(client,"list_head","kernel")->next
+  pprev = @cast(client,"list_head","kernel")->prev
+  printf("next is 0x%x,prev is 0x%x\n",pnext,pprev)
+
+	pCalls = @cast(pnext,"audio_cal_client_info","kernel")->callbacks
+	pSetcal = @cast(pCalls,"audio_cal_callbacks","kernel")->set_cal
+
+  
+
+  printf("setcal is 0x%x callback is 0x%x \n",pSetcal,pCalls);
+
+  myclient = def_array(client,uint_arg(2))
+
+  printf("client is 0x%x\n",client)
+	printf("myclient is 0x%x\n",myclient)
+
+	printf("local vars %s, func paras %s \n",$$locals,$$vars);	 
+	printf("arg1 0x%x arg2 0x%x arg3 0x%x \n",int_arg(3),uint_arg(2),pointer_arg(1))
+	printf("r0: 0x%x r1:0x%x r2:0x%x\n",u_register("r0"),u_register("r1"),u_register("r2"))
+# print_backtrace()
+#	printf("ubacktrace ...\n") 
+# print_ubacktrace()
+	exit() 
+}
