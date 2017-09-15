@@ -1,0 +1,3 @@
+probe begin{
+	system("ping www.baidu.com -c 1")
+}

@@ -1,0 +1,62 @@
+# dqin - Test to use hw breakpont for rw monitoring
+# also demostrate how c code is embedded
+
+global funcaddr
+
+%{ #include <linux/kallsyms.h> %}
+
+function ksymlookup:long (arg1:string)
+%{ 
+  long p;
+  p = kallsyms_lookup_name(STAP_ARG_arg1);
+	
+	if(p==0)
+	{
+		/* printk("can not find the symbol\n"); */
+		STAP_PRINTF("can not find the symbol\n");
+		STAP_RETURN(0);
+	}
+
+  STAP_PRINTF("the %s addr is 0x%x\n",STAP_ARG_arg1,(unsigned int)p);
+	STAP_RETURN(p);
+%}
+
+probe begin
+{
+	printf("start probe...\n");
+	printf("checking the ksys...\n");
+
+	funcaddr = ksymlookup("restart_levels");
+
+	if(funcaddr == 0)
+		exit()
+
+}
+
+
+probe kernel.function("get_num_brps").return
+{
+	printf("system support hwbrp number is 0x%x\n",$return);
+}
+
+probe kernel.function("restart_level_show").call
+{
+	printf("restart_level_show[restart_levels[0] addr 0x%x] called...\n",$restart_levels[0]);
+	printf("%s addr %p\n",kernel_string($restart_levels[0]),$restart_levels);
+}
+
+%( CONFIG_HAVE_HW_BREAKPOINT == "y" %?
+# check the systemmap to get the address
+# or enable CONFIG_KALLSYMS CONFIG_KALLSYMS_ALL 
+#probe kernel.data(0xc09cc81c).length(4).rw
+probe kernel.data("totalram_pages").rw
+#probe kernel.statement(0x000a4134).absolute
+#probe kprobe.statement(0xb6f7a6134).absolute
+{
+	  printf("dirty_writeback_interval value is accessed\n");
+		print_backtrace();
+		exit();
+}
+%:
+probe never {}
+%)

@@ -1,0 +1,6 @@
+probe syscall.mkdir.return {
+	if (isinstr(user_string($pathname), "notcreate")) {
+		printf("dir is not created %s\n",user_string($pathname))
+		$return = -1 # no permission
+	}
+}

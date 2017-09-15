@@ -1,0 +1,12 @@
+probe kernel.function("sock_ioctl"){
+	printf("%s -> %s\n", thread_indent(1),probefunc())
+}
+probe kernel.function("sock_ioctl").return {
+	printf("%s -> %s\n", thread_indent(-1),probefunc())
+}
+probe kernel.function("*@net/core/ethtool.c").call {
+	printf("%s -> %s\n", thread_indent(1),probefunc())
+}
+probe kernel.function("*@net/core/ethtool.c*").return {
+	printf("%s <- %s\n", thread_indent(-1), probefunc())
+}

@@ -1,0 +1,3 @@
+probe module("qcom_emac").function("emac_reg_r32"){
+	printf("emac_reg_r32([flags 0x%x],base 0x%x,reg 0x%x)\n",$hw->flags,$base,$reg);
+}

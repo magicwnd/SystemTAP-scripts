@@ -1,0 +1,9 @@
+function foo:long (bar:long) %{ /* unmangled */
+	printk(KERN_EMERG "Bar: %d\n", (int) THIS->bar);
+	THIS->__retvalue = 0;
+%}
+
+probe syscall.write {
+		printf("%d\n", foo($fd))
+		exit()
+}

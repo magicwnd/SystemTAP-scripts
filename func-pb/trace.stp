@@ -1,0 +1,15 @@
+
+global cnt=0
+probe kernel.function("path_get").return {
+		
+# for test, just run once
+	while(cnt<1)
+	{
+		printf("In process [%s]\n", execname())
+		print_regs()
+		print_backtrace()
+		print("-----------------------------------------\n")
+		cnt++
+	}
+	exit()
+}

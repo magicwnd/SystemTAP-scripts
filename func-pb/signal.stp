@@ -1,0 +1,22 @@
+#probe kernel.function("send_sig"){
+# printf("Signal sent %d from %s to pid 0x%x\n",$sig , execname(),$p->pid );
+#}
+
+probe signal.send {
+	printf("Signal sent %s from %s to %s\n",sig_name , execname(),pid_name );
+}
+
+probe signal.check_ignored = kernel.funcion("sig_ignored"){
+	printf("Signal %s(%d) checked by %s...", sig_name,sig_pid,pid_name)
+}
+probe signal.check_ignored.return{
+	if ($return)
+		printf("Ignored  \n\n")
+		else
+		printf("Accepted \n\n")
+}
+
+#probe signal.check_ignored = kernel.funcion("sig_ignored"){
+#	printf("Signal %s(%d) checked by %s...", sig_name,sig_pid,pid_name)
+#}
+

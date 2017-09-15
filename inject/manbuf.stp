@@ -1,0 +1,14 @@
+probe syscall.write {
+	if (isinstr(user_string($buf),"SystemTap")){
+		$buf = $buf + 0x06 // Shift 6 characters
+	}
+} 
+
+# use echo SystemTap and echo "SystemTap" for tests, different 
+probe syscall.write.return {
+	if (isinstr(user_string($buf),"SystemTap")){
+		printf("syscall return %d\n",$return)
+		exit()
+	}
+} 
+ 

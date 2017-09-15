@@ -1,0 +1,25 @@
+probe nfs.proc.open {
+	printf("Opening file %s from server %x\n", filename, server_ip)
+}
+
+#Not available now
+#probe nfs.proc.commit {
+#	printf("Writing to file %s on server %x\n", filename, server_ip)
+#}
+
+#probe nfs.proc.commit.return {
+#	printf("Writing reply received from server %x. %d bytes wrote\n",
+#	server_ip, count)
+#}
+
+#probe nfs.proc.read {
+#	printf("Read done from server %x\n", server_ip)
+#}
+
+probe nfs.proc.remove {
+	printf("Removing file %s\n", filename)
+}
+
+probe nfs.proc.create {
+	printf("Creating file %s on server %x\n", filename, server_ip)
+}

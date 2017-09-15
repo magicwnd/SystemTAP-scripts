@@ -1,0 +1,24 @@
+probe udp.recvmsg {
+	printf("%s: UDP: Receiving message. Socket %d. Size %d\n", execname(),
+	sock, size)
+}
+probe tcp.recvmsg {
+	printf("%s: TCP: Receiving message. Socket %d. Size %d\n", execname(),
+	sock, size)
+}
+probe udp.sendmsg {
+	printf("%s: UDP: Sending message. Flags %d. Size %d\n", execname(),
+	$sk->sk_flags, size)
+}
+probe tcp.sendmsg {
+	printf("%s: TCP: Sending message. Flags %d. Size %d\n", execname(),
+	$sk->sk_flags, size)
+}
+probe udp.disconnect {
+	printf("%s: UDP: Disconnected %d with flags %d\n", execname(), sock,
+	flags)
+}
+probe tcp.disconnect {
+	printf("%s: TCP: Disconnected %d with flags %d\n", execname(), sock,
+	flags)
+}

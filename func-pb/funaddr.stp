@@ -1,0 +1,9 @@
+global addr
+probe kernel.function("dev_set_rx_mode"){
+	addr = sprintf("%p", $dev->netdev_ops->ndo_do_ioctl);
+	exit()
+}
+probe end {
+	printf("Function address and name are:\n")
+	print_stack(addr)
+}

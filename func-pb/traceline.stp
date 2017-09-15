@@ -1,0 +1,4 @@
+# check vmlinux for debug info
+probe kernel.statement("*@kernel/kernel/fork.c:1687") {
+	printf("new pid is 0x%x\n",$pid)
+}

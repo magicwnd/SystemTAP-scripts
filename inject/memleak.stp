@@ -1,0 +1,10 @@
+global i = 0
+probe kernel.function("__kmalloc").return {
+	$return = 0
+	if (i < 10){
+		printf("Hooked\n")
+	} else {
+		exit()
+	}
+	i = i + 1
+}

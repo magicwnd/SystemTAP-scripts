@@ -1,0 +1,21 @@
+global value
+global netpstats
+global cpustats
+global init_time
+probe begin{
+	printf("Press ^C to stop\n")
+	init_time = gettimeofday_ms()
+}
+probe module("qcom_emac").function("emac_napi_rtx"){
+	value = gettimeofday_ns()
+	cpustats <<< cpu()
+}
+probe module("qcom_emac").function("emac_napi_rtx").return{
+	diff = gettimeofday_ns() - value
+	netpstats <<< diff
+}
+probe end {
+	print(@hist_linear(netpstats,0,1500,50))
+	print(@hist_log(cpustats))
+	printf("Total time: %d miliseconds\n", gettimeofday_ms() - init_time)
+}

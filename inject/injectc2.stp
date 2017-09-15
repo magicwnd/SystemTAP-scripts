@@ -1,0 +1,9 @@
+function foo:long (bar:long) %{ 
+	printk(KERN_EMERG "Bar: %d\n", (int)STAP_ARG_bar );
+	STAP_RETVALUE = 0;
+%}
+
+probe syscall.write {
+		printf("%d\n", foo($fd))
+		exit()
+}

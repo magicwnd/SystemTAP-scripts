@@ -1,0 +1,22 @@
+Demo 1 - callgraph(debug module)
+enable the emac module for tests. 
+#modprobe qcom_emac
+#ifconfig eth0 hw ether 00:80:48:BA:11:30
+
+Demo 2 - callstack (when use the ethtool to access eth0, the callstack will be shown)
+Notes, since without UTRACE/UPROBE, the process can not be traced/probed. 
+The call stack in ethtool(userland) won't work. Use strace if needed, or add the kernel 
+support for UTRACE/UPROBE
+#modprobe qcom_emac
+#ifconfig eth0 hw ether 00:80:48:BA:11:30
+#ethtool eth0
+
+Demo 3 - Monitor function parameter and ret
+
+Demo 4 - Monitor syscall "sys_mkdir" and print the parameter.
+
+Demo 5 - Monitor some line in a function. statement
+
+Demo 6 - Monitor the function address, you need to insmod the emac moduel asbefore, and plug cable to trigger it.
+
+

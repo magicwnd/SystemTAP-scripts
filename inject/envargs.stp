@@ -1,0 +1,3 @@
+probe kernel.function("sys_mkdir"){
+	printf("local variables %s and arguments %s\n", $$locals, $$vars)
+}
